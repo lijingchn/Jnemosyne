@@ -41,12 +41,16 @@ class MnemoDB(object):
 
     def ensure_index(self):
         self.db.hpfeed.ensure_index([('normalized', 1), ('last_error', 1)], unique=False, background=True)
-        self.db.url.ensure_index('url', unique=True, background=True)
-        self.db.url.ensure_index('extractions.hashes.md5', unique=False, background=True)
-        self.db.url.ensure_index('extractions.hashes.sha1', unique=False, background=True)
-        self.db.url.ensure_index('extractions.hashes.sha512', unique=False, background=True)
-        self.db.file.ensure_index('hashes', unique=True, background=True)
-        self.db.dork.ensure_index('content', unique=False, background=True)
+#        self.db.url.ensure_index('url', unique=True, background=True)
+#        self.db.url.ensure_index('extractions.hashes.md5', unique=False, background=True)
+#        self.db.url.ensure_index('extractions.hashes.sha1', unique=False, background=True)
+#        self.db.url.ensure_index('extractions.hashes.sha512', unique=False, background=True)
+#        self.db.file.ensure_index('hashes', unique=True, background=True)
+#        self.db.dork.ensure_index('content', unique=False, background=True)
+# *******************************************
+        self.db.ip_tag.ensure_index('ip', unique=False, background=True)
+        self.db.ip_tag.ensure_index('tag', unique=False, background=True)
+# *******************************************
         self.db.session.ensure_index('protocol', unique=False, background=True)
         self.db.session.ensure_index('source_ip', unique=False, background=True)
         self.db.session.ensure_index('source_port', unique=False, background=True)
@@ -94,7 +98,7 @@ class MnemoDB(object):
                 elif collection is 'metadata':
                     if 'ip' in document and 'honeypot' in document:
                         query = {
-                            'ip': document['ip'], 
+                            'ip': document['ip'],
                             'honeypot': document['honeypot']
                         }
                         values = dict((k,v) for k,v in document.items() if k not in ['ip', 'honeypot'])
@@ -118,7 +122,8 @@ class MnemoDB(object):
             except ValueError, e:
                 logger.warning('insert_hpfeed: payload was not JSON, storing as a string (ident=%s, channel=%s)', ident, channel)
 
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now()
+#        timestamp = datetime.utcnow()
         entry = {'channel': channel,
                  'ident': ident,
                  'payload': payload,
